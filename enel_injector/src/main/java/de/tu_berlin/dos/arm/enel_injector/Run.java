@@ -29,11 +29,12 @@ public class Run {
 
         // get properties for failure experiments
         int interval = Integer.parseInt(props.getProperty("general.interval"));
+        int minPods = Integer.parseInt(props.getProperty("general.minPods"));
         String namespace = props.getProperty("kubernetes.namespace");
         String labelKey = props.getProperty("kubernetes.labelKey");
         String labelValue = props.getProperty("kubernetes.labelValue");
 
-        ClientsManager client = new ClientsManager(namespace);
+        ClientsManager client = new ClientsManager(minPods, namespace);
 
         // execute failure loop based on interval
         final StopWatch stopWatch = new StopWatch();
