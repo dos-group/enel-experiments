@@ -75,13 +75,16 @@ public class ClientsManager {
                     else LOG.info("Not all pods status were in valid phases: " + Arrays.toString(validPhases.toArray()));
                     new CountDownLatch(1).await(100, TimeUnit.MILLISECONDS);
                 }
-                this.stopWatch.reset();
             }
             else LOG.info(String.format("No pods found with label <%s:%s> in namespace %s", labelKey, labelValue, namespace));
         }
         catch (Exception e) {
-
             e.printStackTrace();
+        }
+        finally {
+            if(this.stopWatch.isStarted()){
+                this.stopWatch.reset();
+            }
         }
     }
 }
