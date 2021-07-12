@@ -72,7 +72,7 @@ public class ClientsManager {
                         this.k8sClient.execCommandOnPod(podName, this.namespace, "sh", "-c", "kill 1");
                         break;
                     }
-                    else LOG.info("Not all pods status were in Running or ContainerCreating phases");
+                    else LOG.info("Not all pods status were in valid phases: " + Arrays.toString(validPhases.toArray()));
                     new CountDownLatch(1).await(100, TimeUnit.MILLISECONDS);
                 }
                 this.stopWatch.reset();
