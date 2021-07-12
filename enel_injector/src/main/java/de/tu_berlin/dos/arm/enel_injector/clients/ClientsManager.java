@@ -41,27 +41,33 @@ public class ClientsManager {
      * INSTANCE BEHAVIOUR
      ******************************************************************************/
 
-    public void injectRandomFailure(String labelKey, String labelValue) throws Exception {
+    public void injectRandomFailure(String labelKey, String labelValue) {
 
-        List<Pod> pods = this.k8sClient.getPodsWithLabel(namespace, labelKey, labelValue);
-        if (0 < pods.size()) {
+        try {
+            List<Pod> pods = this.k8sClient.getPodsWithLabel(namespace, labelKey, labelValue);
+            if (0 < pods.size()) {
 
-            stopWatch.start();
-            while (stopWatch.getTime(TimeUnit.SECONDS) < 10) {
+                stopWatch.start();
+                while (stopWatch.getTime(TimeUnit.SECONDS) < 10) {
 
-                int index = UtilityFunctions.getRandomNumberInRange(0, pods.size());
-                Pod pod = pods.get(index);
-                LOG.info(pod.getStatus().getPhase());
-                if ("Running".equalsIgnoreCase(pod.getStatus().getPhase())) {
+                    int index = UtilityFunctions.getRandomNumberInRange(0, pods.size() - 1);
+                    Pod pod = pods.get(index);
+                    LOG.info(pod.getStatus().getPhase());
+                    if ("Running".equalsIgnoreCase(pod.getStatus().getPhase())) {
 
-                    String podName = pod.getMetadata().getName();
-                    this.k8sClient.execCommandOnPod(podName, this.namespace, "sh", "-c", "kill 1");
-                    break;
+                        String podName = pod.getMetadata().getName();
+                        this.k8sClient.execCommandOnPod(podName, this.namespace, "sh", "-c", "kill 1");
+                        break;
+                    }
+                    else LOG.info(String.format("Pod status phase was %s", pod.getStatus().getPhase()));
                 }
-                else LOG.info(String.format("Pod status phase was %s", pod.getStatus().getPhase()));
+                this.stopWatch.reset();
             }
-            this.stopWatch.reset();
+            else LOG.info(String.format("No pods found with label <%s:%s> in namespace %s", labelKey, labelValue, namespace));
         }
-        else LOG.info(String.format("No pods found with label <%s:%s> in namespace %s", labelKey, labelValue, namespace));
+        catch (Exception e) {
+
+            e.printStackTrace();
+        }
     }
 }
