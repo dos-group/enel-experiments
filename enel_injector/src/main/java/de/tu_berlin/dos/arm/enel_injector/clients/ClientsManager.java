@@ -58,7 +58,7 @@ public class ClientsManager {
                 while (stopWatch.getTime(TimeUnit.SECONDS) < 10) {
 
                     // determine if all pods are in running phase
-                    List<String> validPhases = Arrays.asList("Running", "ContainerCreating");
+                    List<String> validPhases = Arrays.asList("Running", "ContainerCreating", "Pending");
                     boolean allAreRunning = true;
                     for (Pod pod : pods) {
 
