@@ -52,7 +52,7 @@ public class ClientsManager {
             LOG.info(String.format(
                 "Number of pods detected with label <%s:%s> in namespace %s is %d",
                 labelKey, labelValue, namespace, pods.size()));
-            if (this.minPods < pods.size()) {
+            if (this.minPods <= pods.size()) {
 
                 stopWatch.start();
                 while (stopWatch.getTime(TimeUnit.SECONDS) < 10) {
