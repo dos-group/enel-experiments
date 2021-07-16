@@ -1,0 +1,80 @@
+apiVersion: "sparkoperator.k8s.io/v1beta2"
+kind: SparkApplication
+metadata:
+  name: {{ template "spark-job-v1-cluster.fullname" . }}
+spec:
+  # shuffle tracking enhancement introduced in Spark >= 3.0.0 for k8s, important for safely removing / adding executors
+  dynamicAllocation:
+    enabled: true
+  type: Scala
+  mode: cluster
+  image: {{  .Values.sparkTemplateValues.sparkImage }}
+  imagePullPolicy: IfNotPresent
+  sparkConf:
+    # some settings that allow for failure injection (hopefully)
+    "spark.network.timeout": "20s"
+    "spark.network.timeoutInterval": "20s"
+    "spark.storage.blockManagerHeartbeatTimeoutMs": "20000ms"
+    "spark.storage.blockManagerSlaveTimeoutMs": "20000ms"
+    "spark.storage.blockManagerTimeoutIntervalMs": "20000ms"
+    "spark.executor.heartbeatInterval": "10s"
+    "spark.scheduler.excludeOnFailure.unschedulableTaskSetTimeout": "20s"
+    # hadoop
+    "spark.hadoop.fs.defaultFS": {{ .Values.sparkTemplateValues.hdfsUrl }}
+    # event log
+    "spark.eventLog.enabled": "true"
+    "spark.eventLog.dir": {{  .Values.sparkTemplateValues.jobLoggingDir }}
+    "spark.eventLog.logStageExecutorMetrics": "true"
+    # set max resultsize to unlimited
+    "spark.driver.maxResultSize": "0"
+    # prevent spark dynamic allocation to actually work (we only want shuffle-tracking)
+    "spark.dynamicAllocation.schedulerBacklogTimeout": "10d"
+    # use default value
+    "spark.dynamicAllocation.executorIdleTimeout": "60s"
+    # some more settings related to spark + k8s
+    "spark.kubernetes.executor.checkAllContainers": "true"
+    "spark.kubernetes.executor.deleteOnTermination": "true"
+    # very experimental below...
+    "spark.kubernetes.allocation.batch.size": "50"
+    "spark.kubernetes.allocation.batch.delay": "10s"
+    # metric monitoring + k8s monitoring
+    "spark.metrics.conf": "/etc/metrics/conf/metrics.properties"
+    "spark.ui.prometheus.enabled": "true"
+    "spark.metrics.appStatusSource.enabled": "true"
+    "spark.sql.streaming.metricsEnabled": "true"
+    "spark.metrics.staticSources.enabled": "true"
+    "spark.metrics.executorMetricsSource.enabled": "true"
+    "spark.executor.processTreeMetrics.enabled": "true"
+    "spark.kubernetes.driver.annotation.prometheus.io/scrape": "true"
+    "spark.kubernetes.driver.annotation.prometheus.io/path": "/metrics/prometheus/ | /metrics/executors/prometheus/"
+    "spark.kubernetes.driver.annotation.prometheus.io/port": "4040"
+    #Configuration
+    {{ range $k, $v := .Values.sparkTemplateValues.scaleOutTuner.config }}
+    {{  print  "spark.customExtraListener."  $k | quote }}: {{ $v | quote -}}
+    {{- end }}
+  #batchScheduler: "volcano"
+  mainClass: {{ .Values.sparkTemplateValues.jobMainClass }}
+  mainApplicationFile: {{ .Values.sparkTemplateValues.jobMainApplicationFile }}
+  arguments: {{ .Values.globalSpecs.algorithmArgs | toJson }}
+  sparkVersion: {{ .Values.optionalSpecs.sparkVersion | quote }}
+  deps:
+    jars:
+      - {{ .Values.sparkTemplateValues.scaleOutTuner.jarPath }}
+  restartPolicy:
+    type: Never
+  driver:
+    cores: {{ .Values.masterSpecs.cores }}
+    memory: {{ .Values.masterSpecs.memory }}
+    memoryOverhead: {{ .Values.masterSpecs.memoryOverhead  }}
+    labels:
+      version: {{ .Values.optionalSpecs.sparkVersion }}
+    serviceAccount: {{ .Values.sparkTemplateValues.rbacServiceAccount | quote }}
+
+  executor:
+    cores: {{ .Values.workerSpecs.cores }}
+    instances: {{ .Values.workerSpecs.scaleOut }}
+    memory: {{ .Values.workerSpecs.memory }}
+    memoryOverhead: {{  .Values.workerSpecs.memoryOverhead  }}
+    deleteOnTermination: True
+    labels:
+      version: {{ .Values.optionalSpecs.sparkVersion }}

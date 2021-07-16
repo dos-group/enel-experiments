@@ -1,0 +1,44 @@
+globalSpecs:
+  algorithmArgs:
+    - 'hdfs:///spark/sort/sort-20G'
+    - 'hdfs:///output/spark/sort/20G_test'
+masterSpecs:
+  scaleOut: 1
+  cores: 6
+  memory: "10240m"
+  memoryOverhead: "2048m"
+workerSpecs:
+  scaleOut: 1
+  cores: 6
+  memory: "10240m"
+  memoryOverhead: "2048m"
+optionalSpecs:
+  sparkVersion: 3.1.1
+sparkTemplateValues:
+  sparkImage: "mcd01/spark:v3.1.1-servlet"
+  rbacServiceAccount: "spark-operator"
+  hdfsUrl: "hdfs://my-server:9000"
+  # className has to be valid and used in the provided JAR File
+  jobMainApplicationFile: "hdfs:///jar-files/runtime-adjustments-experiments-1.0-SNAPSHOT-jar-with-dependencies.jar"
+  jobMainClass: de.tuberlin.cit.jobs.v2_1.LogisticRegression
+  jobLoggingDir: "hdfs:///spark/job-event-log/"
+  scaleOutTuner:
+    jarPath: "hdfs:///jar-files/runtime-adjustments-experiments-1.0-SNAPSHOT-jar-with-dependencies.jar"
+    config:
+      # shared properties
+      method: "enel"
+      isAdaptive: true
+      initialExecutors: "4"
+      # enel properties
+      restTimeout: 30
+      onlineScaleOutPredictionEndpoint: "prediction/online_scale_out_prediction"
+      updateInformationEndpoint: "training/update_information"
+      # ellis properties
+      dbPath: "tcp://my-server:9092/~/bell"
+      minExecutors: "4"
+      maxExecutors: "20"
+      targetRuntimems: "420000"
+      # below: to be configured (overridden) by enel_service
+      service: ""
+      port: 5000
+      applicationExecutionId: ""
