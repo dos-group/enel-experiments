@@ -1,0 +1,38 @@
+name: enel_service
+
+dependencies:
+- pip
+- pyzmq
+- jsonpickle
+- scipy=1.5.2
+- numpy=1.19.1
+- scikit-learn=0.23.2
+- pandas>=1.1.1
+- python>=3.8.0
+- dill==0.3.3
+- pyyaml=5.4.1
+- fastapi=0.63.0
+- uvicorn=0.13.4
+- requests-kerberos=0.12.0
+- python-kubernetes=12.0.1
+- pytorch::cpuonly
+- pytorch::pytorch=1.8.0
+- pytorch::ignite=0.4.2
+- conda-forge::motor=2.3.0 # mongodb async client
+- conda-forge::optuna=2.8.0  # hyperparameter tuning
+- conda-forge::ray-tune=1.4.0  # hyperparameter tuning
+- pip:
+  - hdfs==2.5.8
+  - kerberos==1.3.0
+  - py4j==0.10.9.2
+  - pytest
+  # below: pytorch geometric, for graphs
+  - torch-scatter
+  - --find-links https://pytorch-geometric.com/whl/torch-1.8.0+cpu.html
+  - torch-sparse
+  - --find-links https://pytorch-geometric.com/whl/torch-1.8.0+cpu.html
+  - torch-cluster
+  - --find-links https://pytorch-geometric.com/whl/torch-1.8.0+cpu.html
+  - torch-spline-conv
+  - --find-links https://pytorch-geometric.com/whl/torch-1.8.0+cpu.html
+  - torch-geometric==1.7.2
