@@ -4,8 +4,8 @@ Prototypical implementation of "Enel" for runtime prediction / resource allocati
 
 This repository contains several subdirectories, featuring the following content:
 
-- `data`: The data we recorded during our experiments, or, to be more precise, needed for our evalation.
-- `enel_injector`: A small java program handling the injection of failures.
+- `data`: The data we recorded during our experiments, or, to be more precise, needed for our evaluation.
+- `enel_injector`: A small java program handling the injection of failures into spark executor pods.
 - `enel_service`: Our python web service that handles training of models + submission & adjustments of spark applications.
 - `evaluation`: Python notebooks for the evaluation.
 - `spark_utils`: A package that encompasses benchmark jobs, dataset generators, and custom spark listeners that we have used.
