@@ -1,8 +1,14 @@
-# Ellis: Spark Application Scale-out Tuner
+# Data Generation, Benchmark Jobs, and custom Spark Listeners
+
+This folder and package is an adapted version of the repository offered with Ellis. It can be found [here](https://github.com/dos-group/runtime-adjustments-experiments). 
 
 Ellis uses Spark listener to implement its tuning strategy on job level.
 It is the implementation of
 Thamsen, Lauritz, et al. "Ellis: Dynamically Scaling Distributed Dataflows to Meet Runtime Targets." 2017 IEEE International Conference on Cloud Computing Technology and Science (CloudCom). IEEE, 2017.
+
+We compared our approach Enel to Ellis in terms of meeting runtime targets. To do so, we build upon the used benchmark jobs, performed upgrades if necessary, and adapted the original Ellis Spark listener so that it can work in our environment. 
+
+We then implemented our own listener (`EnelScaleOutListener`). It utilizes an http client to communicate with our python service. Also, fine-grained information about statistics are collected. The scale-out is eventually updated based on the response of our python service.
 
 
 * Environment
@@ -14,7 +20,7 @@ Thamsen, Lauritz, et al. "Ellis: Dynamically Scaling Distributed Dataflows to Me
 
 * Setup H2 Database
   
-  * Install and run H2
+  * Install and run H2 (Ellis uses this database)
     
     ```bash
     java -cp h2-1.4.194.jar org.h2.tools.Server -webAllowOthers -tcpAllowOthers
