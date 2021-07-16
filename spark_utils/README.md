@@ -41,13 +41,13 @@ We then implemented our own listener (`EnelScaleOutListener`). It utilizes an ht
     ```bash
     $SPARK_HOME/bin/spark-submit \
         --conf spark.master=local[3] 	\
-        --conf spark.customExtraListener.dbPath=tcp://wally033:9092/~/test 	\
+        --conf spark.customExtraListener.dbPath=tcp://my-server:9092/~/test 	\
         --conf spark.customExtraListener.minExecutors=1 	\
         --conf spark.customExtraListener.maxExecutors=2 	\
         --conf spark.customExtraListener.initialExecutors=1 	\
         --conf spark.customExtraListener.targetRuntimems=600	\
         --k 3 \
-        hdfs://wally036:9000/spark/kmeans/small.txt
+        hdfs://my-server:9000/spark/kmeans/small.txt
     ```
   
   * How to choose a tuning mode
