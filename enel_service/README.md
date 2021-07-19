@@ -88,7 +88,7 @@ If configured accordingly, the listener will send updates to our service and als
      http://<my-server>:<my-port>/prediction/online_scale_out_prediction
 endpoint. The Enel-service then gets model artifacts, performs fine-tuning on the available job-information, and predicts the most suitable scale-out for the remaining job runtime. As of know, for this to work, the artifacts first need to be fetched, as this will lead to caching and faster access times later. This can be done using the endpoint
 
-     http://<my-server>:<my-port>//preload/{base_name}
+     http://<my-server>:<my-port>/prediction/preload/{base_name}
 where `base_name` is one of `[gbt, mpc, logisticregression, kmeans]`, i.e. one of our used benchmark jobs.
 
 # Questions? Something does not work or remains unclear?
